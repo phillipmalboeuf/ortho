@@ -19,7 +19,7 @@
   --or: #B46E1C;
   --rouge: #E12E07;
 
-  --bodyfont: monospace;
+  --bodyfont: Helvetica, sans-serif;
   --altfont: monospace;
 }
 
@@ -55,7 +55,7 @@ body {
 
 main {
   min-height: 100vh;
-  margin-top: calc(var(--gutter) * 2);
+  padding-top: calc(var(--gutter) * 2);
 }
 
 @mixin text($size, $lh, $ls: 0) {
@@ -72,6 +72,10 @@ main {
 
 .d2 {
   @include text(60px, 72px, -0.04em);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--altfont);
 }
 
 h1, h2, h3, h4, h5, h6, p, figure {
@@ -158,6 +162,15 @@ svg {
 
 [id] {
   scroll-margin-top: var(--gutter);
+}
+
+input {
+  display: block;
+  width: 100%;
+  border: 1px solid;
+  border-radius: 2em;
+  font-size: 1em;
+  padding: 0.5em;
 }
 
 .sticky {

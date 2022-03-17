@@ -38,7 +38,13 @@
 	onMount(async () => {
 		const id = sessionStorage.getItem("cart-id")
 		if (id) {
-			$cart = await getCart(fetch, id)
+      const c = await getCart(fetch, id)
+      if (c) {
+        $cart = c  
+      } else {
+        $cart = await createCart(fetch)
+			  sessionStorage.setItem("cart-id", $cart.id)
+      }
 		} else {
 			$cart = await createCart(fetch)
 			sessionStorage.setItem("cart-id", $cart.id)

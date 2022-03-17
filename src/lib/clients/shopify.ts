@@ -264,10 +264,11 @@ export interface CartDocument {
 }
 
 function postprocessCart(cart: CartDocument) {
-  return {
-    ...cart,
-    // lines: cart.lines?.edges.map(e => e.node)
-  }
+  return cart
+  // return {
+  //   ...cart,
+  //   // lines: cart.lines?.edges.map(e => e.node)
+  // }
 }
 
 export async function createCart(fetch) {
@@ -381,5 +382,397 @@ export async function removeDiscountCode(fetch, cart_id: string) {
       }
     }`).then(result => {
       return postprocessCart(result.data.cartDiscountCodesUpdate.cart)
+    })
+}
+
+export async function updateCartIdentiy(fetch, cartId: string, customerAccessToken: string) {
+  return request<{
+    cartBuyerIdentityUpdate: {
+      cart: CartDocument
+    }
+  }>(fetch, `
+    mutation cartBuyerIdentityUpdate($buyerIdentity: CartBuyerIdentityInput!, $cartId: ID!) {
+      cartBuyerIdentityUpdate(buyerIdentity: $buyerIdentity, cartId: $cartId) {
+        cart ${cartNode}
+        userErrors {
+          field
+          message
+        }
+      }
+    }`, {
+      cartId,
+      buyerIdentity: {
+        customerAccessToken
+      }
+    }).then(result => {
+    return postprocessCart(result.data.cartBuyerIdentityUpdate.cart)
+  })
+}
+
+
+export interface Address {
+  id: string
+  firstName: string
+  lastName: string
+  address1: string
+  address2: string
+  city: string
+  company: string
+  country: string
+  formatted: string[]
+  province: string
+  zip: string
+  phone: string
+}
+
+export interface Customer {
+  id: string
+  firstName: string
+  lastName: string
+  acceptsMarketing: boolean
+  email: string
+  phone: string
+  defaultAddress?: Address
+}
+
+const customerNode = `{
+  id
+  firstName
+  lastName
+  acceptsMarketing
+  email
+  phone
+}`
+
+export async function fetchCustomer(fetch, token: string) {
+  return request<{
+    customer: Customer
+  }>(fetch, `
+    query($token: String!) {
+      customer(customerAccessToken: $token) ${customerNode}
+    }`, {
+      token
+    })
+}
+
+export async function login(fetch, email: string, password: string) {
+  return request<{
+    customerAccessTokenCreate: {
+      customerAccessToken: {
+        accessToken: string
+        expiresAt: string
+      }
+      userErrors: {
+        field: string
+        message: string
+      }[]
+    }
+  }>(fetch, `
+    mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
+      customerAccessTokenCreate(input: $input) {
+        customerAccessToken {
+          accessToken
+          expiresAt
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }`, {
+      input: {
+        email,
+        password
+      }
+    })
+}
+
+export async function logout(fetch, token: string) {
+  return request<{
+    customerAccessTokenDelete: {
+      deletedAccessToken: string
+      expiresAt: string
+    }
+  }>(fetch, `
+    mutation customerAccessTokenDelete($token: String!) {
+      customerAccessTokenDelete(customerAccessToken: $token) {
+        deletedAccessToken
+        deletedCustomerAccessTokenId
+        userErrors {
+          field
+          message
+        }
+      }
+    }`, {
+      token
+    })
+}
+
+export async function create(fetch, email: string, password: string, firstName: string, lastName: string,  acceptsMarketing?: boolean) {
+  return request<{
+    customerCreate: {
+      customer: Customer
+      customerUserErrors: {
+        field: string
+        message: string
+      }[]
+    }
+  }>(fetch, `
+    mutation customerCreate($input: CustomerCreateInput!) {
+      customerCreate(input: $input) {
+        customer ${customerNode}
+        customerUserErrors {
+          field
+          message
+        }
+      }
+    }`, {
+      input: {
+        email,
+        password,
+        firstName,
+        lastName,
+        acceptsMarketing
+      }
+    })
+}
+
+export async function recover(fetch, email: string) {
+  return request<{
+    customerRecover: {
+      customerUserErrors: {
+        field: string
+        message: string
+      }[]
+    }
+  }>(fetch, `
+    mutation customerRecover($email: String!) {
+      customerRecover(email: $email) {
+        customerUserErrors {
+          field
+          message
+        }
+      }
+    }`, {
+      email
+    })
+}
+
+export async function activate(fetch, id: string, activationToken: string, password: string) {
+  return request<{
+    customerActivate: {
+      customer: Customer
+      customerAccessToken: {
+        accessToken: string
+        expiresAt: string
+      }
+    }
+  }>(fetch, `
+    mutation customerActivate($id: ID!, $input: CustomerActivateInput!) {
+      customerActivate(id: $id, input: $input) {
+        customer ${customerNode}
+        customerAccessToken {
+          accessToken
+          expiresAt
+        }
+        customerUserErrors {
+          field
+          message
+        }
+      }
+    }`, {
+      id,
+      input: {
+        activationToken,
+        password
+      }
+    })
+}
+
+export async function reset(fetch, id: string, resetToken: string, password: string) {
+  return request<{
+    customerReset: {
+      customer: Customer
+      customerAccessToken: {
+        accessToken: string
+        expiresAt: string
+      }
+    }
+  }>(fetch, `
+    mutation customerReset($id: ID!, $input: CustomerResetInput!) {
+      customerReset(id: $id, input: $input) {
+        customer ${customerNode}
+        customerAccessToken {
+          accessToken
+          expiresAt
+        }
+        customerUserErrors {
+          field
+          message
+        }
+      }
+    }`, {
+      id,
+      input: {
+        resetToken,
+        password
+      }
+    })
+}
+
+export interface Order {
+  id: string
+  name: string
+  fulfillmentStatus: string
+  statusUrl: string
+  currentTotalPrice: {
+    amount: number
+    currencyCode: string
+  }
+}
+
+export async function fetchOrders(fetch, token: string, limit=50, page=0) {
+  return request<{
+    customer: {
+      orders: {
+        edges: {
+          node: Order
+        }[]
+      }
+    }
+  }>(fetch, `
+    query($token: String!) {
+      customer(customerAccessToken: $token) {
+        orders(first: ${limit}) {
+          pageInfo {
+            hasNextPage
+            hasPreviousPage
+          }
+          edges {
+            node {
+              id
+              name
+              fulfillmentStatus
+              statusUrl
+              currentTotalPrice {
+                amount
+                currencyCode
+              }
+            }
+          }
+        }
+      }
+    }`, {
+      token
+    })
+}
+
+const addressNode = `{
+  id
+  firstName
+  lastName
+  company
+  address1
+  address2
+  city
+  province
+  country
+  zip
+  phone
+  formatted
+}`
+
+export async function fetchAddresses(fetch, token: string, limit=50, page=0) {
+  return request<{
+    customer: {
+      addresses: {
+        edges: {
+          node: Address
+        }[]
+      }
+    }
+  }>(fetch, `
+    query($token: String!) {
+      customer(customerAccessToken: $token) {
+        addresses(first: ${limit}) {
+          pageInfo {
+            hasNextPage
+            hasPreviousPage
+          }
+          edges {
+            node ${addressNode}
+          }
+        }
+      }
+    }`, {
+      token
+    })
+}
+
+export async function createAddress(fetch, token: string, address: object) {
+  return request<{
+    customerAddressCreate: {
+      customerAddress: Address,
+      customerUserErrors: {
+        field: string
+        message: string
+      }[]
+    }
+  }>(fetch, `
+    mutation customerAddressCreate($address: MailingAddressInput!, $token: String!) {
+      customerAddressCreate(address: $address, customerAccessToken: $token) {
+        customerAddress ${addressNode}
+        customerUserErrors {
+          field
+          message
+        }
+      }
+    }`, {
+      token,
+      address
+    })
+}
+
+export async function deleteAddress(fetch, token: string, id: string) {
+  return request<{
+    customerAddressCreate: {
+      deletedCustomerAddressId: string
+    }
+  }>(fetch, `
+    mutation customerAddressDelete($token: String!, $id: ID!) {
+      customerAddressDelete(customerAccessToken: $token, id: $id) {
+        customerUserErrors {
+          message
+        }
+        deletedCustomerAddressId
+      }
+    }`, {
+      token,
+      id
+    })
+}
+
+export async function updateAddress(fetch, token: string, id: string, address: object) {
+  return request<{
+    customerAddressUpdate: {
+      customerAddress: Address,
+      customerUserErrors: {
+        field: string
+        message: string
+      }[]
+    }
+  }>(fetch, `
+    mutation customerAddressUpdate($address: MailingAddressInput!, $token: String!, $id: ID!) {
+      customerAddressUpdate(address: $address, customerAccessToken: $token, id: $id) {
+        customerAddress ${addressNode}
+        customerUserErrors {
+          field
+          message
+        }
+      }
+    }`, {
+      id,
+      token,
+      address
     })
 }
