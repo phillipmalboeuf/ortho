@@ -78,7 +78,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--altfont);
 }
 
-h1, h2, h3, h4, h5, h6, p, figure {
+h1, h2, h3, h4, h5, h6, p, figure, ol, ul, li {
   margin: 0 0 1rem;
   white-space: pre-line;
 }
@@ -151,6 +151,15 @@ a.button {
   border: 1px solid;
   border-radius: 2em;
   padding: 0.5em 0.75em;
+}
+
+ul, ol {
+  padding-left: 1em;
+
+  &.nope {
+    padding: 0;
+    list-style: none;
+  }
 }
 
 svg {

@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import type { ProduitDocument } from 'src/routes/produits/[id].svelte'
+  import type { ProduitDocument } from 'src/routes/collections/[collection]/produits/[produit].svelte'
 
   export interface CollectionDocument {
     titre: string
@@ -21,17 +21,17 @@
 <Box>
   <svelte:fragment slot="sh">{entry.titre}</svelte:fragment>
   <svelte:fragment slot="content">
-    <h2>{entry.titre}</h2>
+    <h2><a href="/collections/{entry.id}">{entry.titre}</a></h2>
     <div class="grid grid--halves">
       {#each entry.produitsCollection.items as produit}
-      <a href="/produits/{produit.id}">
+      <a href="/collections/{entry.id}/produits/{produit.id}">
         <figure>
           <Picture media={produit.thumbnail} small noDescription />
         </figure>
         <div class="grid grid--thirds">
           <h6>{produit.titre}</h6>
           <span>Titre</span>
-          <span><em>Buy</em> <Arrow /></span>
+          <span><u>Buy</u> <Arrow /></span>
         </div>
       </a>
       {/each}
@@ -41,8 +41,4 @@
 
 
 <style lang="scss">
-  em {
-    font-style: normal;
-    text-decoration: underline;
-  }
 </style>

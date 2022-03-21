@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { query } from '$lib/clients/contentful'
   import { getProduct, type ProductDocument } from '$lib/clients/shopify'
-  import { media } from '../[page].svelte'
+  import { media } from '../../../[page].svelte'
 
   export interface ProduitDocument {
     titre: string
@@ -31,7 +31,7 @@
         }
       }
     `, {
-      id: params.id
+      id: params.produit
     })
 
     if (data.produitCollection.items.length) {

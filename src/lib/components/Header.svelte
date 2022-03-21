@@ -8,7 +8,7 @@
 <header class="flex flex--spaced flex--middle">
   <nav class="flex">
     <a href="/">Menu</a>
-    <a href="/">Residential</a> / <a href="/">Commercial</a>
+    <a href="/portfolios/residential">Residential</a> / <a href="/portfolios/commercial">Commercial</a>
   </nav>
   <a class="h3" href="/"><h3>Orthografica</h3></a>
   <nav class="flex flex--middle">

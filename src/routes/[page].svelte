@@ -42,7 +42,6 @@
           items {
             titre
             id
-            description
             ${contenuCollection}
           }
         }

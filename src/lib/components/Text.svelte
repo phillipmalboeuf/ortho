@@ -1,6 +1,6 @@
 <script lang="ts">
   import Box from './Box.svelte'
-import Document from './document/Document.svelte'
+  import Document from './document/Document.svelte'
 
   export let entry: {
     titre: string
@@ -11,12 +11,17 @@ import Document from './document/Document.svelte'
   }
 </script>
 
-<Box>
-  <svelte:fragment slot="sh">{entry.titre}</svelte:fragment>
-  <svelte:fragment slot="content">
-    <Document body={entry.corps} />
-  </svelte:fragment>
-</Box>
+<div>
+  <Box>
+    <svelte:fragment slot="sh">{entry.titre}</svelte:fragment>
+    <svelte:fragment slot="content">
+      <Document body={entry.corps} />
+    </svelte:fragment>
+  </Box>
+</div>
 
 <style lang="scss">
+  h2 {
+
+  }
 </style>

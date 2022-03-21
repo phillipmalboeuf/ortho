@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-  import type { ProduitDocument } from 'src/routes/produits/[id].svelte'
+  import type { ProduitDocument } from 'src/routes/collections/[collection]/produits/[produit].svelte'
 	import { date, money } from '$lib/formatters'
   import { query } from '$lib/clients/contentful'
 
