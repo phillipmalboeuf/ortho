@@ -1,13 +1,14 @@
 <script lang="ts">
   import Cart from './Cart.svelte'
+  import Menu from './Menu.svelte'
 
   let cartVisible = false
   let cartNumber = 0
 </script>
 
 <header class="flex flex--spaced flex--middle">
-  <nav class="flex">
-    <a href="/">Menu</a>
+  <nav class="flex flex--middle">
+    <Menu />
     <a href="/portfolios/residential">Residential</a> / <a href="/portfolios/commercial">Commercial</a>
   </nav>
   <a class="h3" href="/"><h3>Orthografica</h3></a>

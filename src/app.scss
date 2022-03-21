@@ -128,7 +128,8 @@ p, .p2 {
 }
 
 small, .small {
-  @include text(10px, 12px, 0.02em);
+  @include text(12px, 18px, 0.11em);
+  text-transform: none;
 }
 
 a {
@@ -238,4 +239,7 @@ input {
 
 .padded {
   padding: var(--gutter);
+
+  &.padded--flat_bottom { padding-bottom: calc(var(--gutter) / 4); }
+  &.padded--flat_top { padding-top: calc(var(--gutter) / 4); }
 }
